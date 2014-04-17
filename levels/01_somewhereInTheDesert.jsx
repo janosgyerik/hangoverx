@@ -1,17 +1,7 @@
 #BEGIN_PROPERTIES#
 {
     "version": "0.2",
-    "commandsIntroduced":
-        ["global.startLevel", "map.placePlayer",
-         "map.placeObject", "map.getHeight", "map.getWidth",
-         "map.displayChapter", "map.getPlayer",
-         "map.getObjectTypeAt",
-         "map.getCanvasContext", "canvas.beginPath", "canvas.strokeStyle",
-         "canvas.lineWidth", "canvas.moveTo", "canvas.lineTo",
-         "canvas.stroke"],
-    "mapProperties": {
-        "showDrawingCanvas": true
-    }
+    "commandsIntroduced": []
 }
 #END_PROPERTIES#
 /***************************
@@ -37,34 +27,62 @@ function startLevel(map) {
 #START_OF_START_LEVEL#
     //map.displayChapter('Chapter 1\nUhm... Wha..?');
 
+    function moveToward(obj, type) {
+        var target = obj.findNearest(type);
+        var leftDist = obj.getX() - target.x;
+        var upDist = obj.getY() - target.y;
+
+        if (Math.abs(upDist) < 2 && Math.abs(leftDist) < 4
+            || Math.abs(leftDist) < 2 && Math.abs(upDist) < 4) {
+            return;
+        }
+        var direction;
+        if (upDist > 0 && upDist >= leftDist) {
+            direction = 'up';
+        } else if (upDist < 0 && upDist < leftDist) {
+            direction = 'down';
+        } else if (leftDist > 0 && leftDist >= upDist) {
+            direction = 'left';
+        } else {
+            direction = 'right';
+        }
+
+        if (obj.canMove(direction)) {
+            obj.move(direction);
+        }
+    }
+
+    map.defineObject('laser', {
+        'symbol': '-',
+        'color': '#0ff',
+        'onCollision': function (player, me) {
+            player.killedBy('deadly laser');
+        }
+    });
+
+    map.defineObject('eye', {
+        'type': 'dynamic',
+        'symbol': 'E',
+        'color': 'red',
+        'behavior': function (me) {
+            moveToward(me, 'player');
+        },
+        'hello': true
+    });
+
     var exit_x = parseInt(map.getWidth() / 2);
-    var exit_y = parseInt(map.getHeight() / 2);
+    var exit_y = parseInt(map.getHeight() / 2) - 5;
     map.placeObject(exit_x, exit_y, 'exit');
-    for (var i = 0; i < 3; ++i) {
+    for (var i = 0; i < 4; ++i) {
         map.placeObject(exit_x - 1, exit_y - 1 + i, 'block');
         map.placeObject(exit_x + 1, exit_y - 1 + i, 'block');
     }
     map.placeObject(exit_x, exit_y - 1, 'block');
-
-    function xToCanvas(x) { return x / map.getWidth() * 600; }
-    function yToCanvas(y) { return y / map.getHeight() * 500; }
-
-    var x1 = xToCanvas(exit_x);
-    var y1 = yToCanvas(exit_y + 1.8);
-    var x2 = xToCanvas(exit_x + 1);
-    var y2 = yToCanvas(exit_y + 1.8);
-    map.createLine([x1, y1], [x2, y2], function (player) {
-        player.killedBy('deadly laser');
-    });
-    var ctx = map.getCanvasContext();
-    ctx.beginPath();
-    ctx.strokeStyle = '#0ff';
-    ctx.lineWidth = 5;
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
+    map.placeObject(exit_x, exit_y + 1, 'laser');
+    map.placeObject(exit_x, exit_y + 2, 'laser');
 
     map.placePlayer(map.getWidth()-17, map.getHeight()-7);
+    map.placeObject(map.getWidth()-17, map.getHeight()-5, 'eye');
     map.placeObject(map.getWidth()-11, map.getHeight()-7, 'computer');
 
     function generateDesert() {
