@@ -31,6 +31,15 @@ Then run:
 make runlocal
 ```
 
+### Editing levels
+
+While editing a level, you can leave the local server running,
+and rebuild `scripts/build/hangoverx.js` in debug mode with:
+
+    make clean debug
+
+To edit and test a specific level `n=3`, visit: http://localhost:9001/?lvl=3
+
 ### Acknowledgements
 
 HangoverX is based on (or a total rip-off of) another game called Untrusted by [Alex Nisnevich](http://alex.nisnevich.com/) and [Greg Shuflin](https://github.com/neunenak).
