@@ -54,7 +54,7 @@ function startLevel(map) {
 
     map.defineObject('laser', {
         'symbol': '-',
-        'color': '#0ff',
+        'color': 'red',
         'onCollision': function (player, me) {
             player.killedBy('deadly laser');
         }
@@ -91,6 +91,7 @@ function startLevel(map) {
                 if (map.getPlayer().atLocation(i,j)
                     || map.getObjectTypeAt(i, j) === 'block'
                     || map.getObjectTypeAt(i, j) === 'computer'
+                    || map.getObjectTypeAt(i, j) === 'eye'
                     || map.getObjectTypeAt(i, j) === 'exit') {
                     continue;
                 }
