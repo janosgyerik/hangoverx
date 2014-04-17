@@ -6,30 +6,23 @@ The game presents you with a roguelike-like playing environment and a console wi
 
 ### Development
 
-Run
-```
-make
-```
-to merge the JavaScript files into `scripts/build/hangoverx.js` (and enables debug features).
+To merge the JavaScript files into `scripts/build/hangoverx.js` and enables debug features:
 
-```
-make release
-```
-merges and minifies the JavaScript files into `scripts/build/hangoverx.min.js` (and disables debug features).
+    make
+
+To merge and minify the JavaScript files into `scripts/build/hangoverx.min.js` and disable debug features:
+
+    make release
 
 To run the game locally, you need to set up a local server to serve `index.html` (this step is necessary due to Access-Control-Allow-Origin restrictions).
 
 First install [http-server](https://github.com/nodeapps/http-server/#installing-globally) if you haven't already:
 
-```
-sudo npm install http-server
-```
+    npm install http-server
 
 Then run:
 
-```
-make runlocal
-```
+    make runlocal
 
 ### Editing levels
 
