@@ -1,4 +1,4 @@
-**HangoverX** is an exciting(?) Meta-Javascript Adventure Game wherein you guide the dashing, steadfast Mr. Klu(less?) through a mysterious world, wherein, using only his trusty computer and the TURING-COMPLETE power of Javascript, he must literally ALTER HIS REALITY in order to find his freedom! You must literally edit and re-execute the very Javascript running the game in your browser to save Mr. Klu(less?) from this dark and confusing reality!
+**HangoverX** is an exciting(?) Meta-Javascript Adventure Game wherein you guide the dashing, steadfast Mr. ?(Cluless?) through a mysterious world, wherein, using only his trusty computer and the TURING-COMPLETE power of Javascript, he must literally ALTER HIS REALITY in order to find his freedom! You must literally edit and re-execute the very Javascript running the game in your browser to save Mr. ?(Cluless?) from this dark and confusing reality!
 
 ### Overview
 

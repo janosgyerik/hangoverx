@@ -163,7 +163,7 @@ ROT.Display.prototype.playIntro = function (map, i) {
         this.drawText(0, i - 2, "%c{#0f0}> initialize")
         this.drawText(15, i + 3, "H A N G O V E R X");
         this.drawText(20, i + 5, "- or - ");
-        this.drawText(3, i + 7, "THE CONTINUING ADVENTURES OF MR. KLU(LESS?)");
+        this.drawText(3, i + 7, "THE CONTINUING ADVENTURES OF MR. ?(CLULESS?)");
         //this.drawText(3, i + 12, "a game by ...");
         this.drawText(10, i + 22, "Press any key to begin ...")
         setTimeout(function () {
