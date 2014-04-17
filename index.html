@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HangoverX - a user javascript adventure game</title>
+	<meta charset='utf8'></meta>
+	<link rel="shortcut icon" href="favicon.ico" />
+
+	<link href='//fonts.googleapis.com/css?family=Droid+Sans+Mono|Share+Tech+Mono' rel='stylesheet' type='text/css'>
+
+	<link rel="stylesheet" href="styles/game.css">
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script type="text/javascript" src="lib/es5-shim.min.js"></script>
+	<script type="text/javascript" src="lib/shortcut.js"></script>
+	<script type="text/javascript" src="lib/rotjs-library/rot.js"></script>
+	<script type="text/javascript" src="lib/jquery.jplayer.min.js"></script>
+
+	<link rel="stylesheet" href="lib/codemirror-3.1/lib/codemirror.css">
+	<script src="lib/codemirror-3.1/lib/codemirror.js"></script>
+	<script src="lib/codemirror-3.1/mode/javascript/javascript.js"></script>
+	<link rel="stylesheet" href="lib/codemirror-3.1/theme/vibrant-ink.css">
+
+	<script src="scripts/build/hangoverx.js"></script>
+</head>
+<body>
+	<a href="https://github.com/janosgyerik/hangoverx" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0; z-index: 9999;" src="//s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+	<div id="container">
+        <div id="panes">
+        	<a id="muteButton"><img src="images/mute-off.png" /></a>
+			<span id="nowPlayingMsg" class="topStatus"></span>
+			<span id="savedLevelMsg" class="topStatus"></span>
+			<div id="screenPane">
+				<canvas id="drawingCanvas" width="600" height="500"></canvas>
+				<div id="dummyDom"></div>
+				<div id="screen"></div>
+				<div id="inventory"></div>
+				<div id="output"></div>
+				<div id="chapter"></div>
+			</div>
+			<div id="editorPane" style="display: none;">
+				<textarea id="editor">
+				</textarea>
+				<div id="buttons">
+					<span><a id="helpButton" title="Ctrl+1: API Reference"><span class="keys">^1</span> API</a></span>
+					<span><a id="toggleFocusButton" title="Ctrl+2: Toggle Focus"><span class="keys">^2</span> Toggle Focus</a></span>
+                    <span><a id="notepadButton" title="Ctrl+3: Notepad"><span class="keys">^3</span> Notepad</a></span>
+					<span><a id="resetButton" title="Ctrl+4: Reset Level"><span class="keys">^4</span> Reset</a></span>
+					<span><a id="executeButton" title="Ctrl+5: Execute"><span class="keys">^5</span> Execute</a></span>
+					<span><a id="phoneButton" style="display: none;" title="Q: Use Phone"><span class="keys"> Q</span> Phone</a></span>
+					<span><a id="menuButton" title="Ctrl+0: Menu" style="float: right;"><span class="keys">^0</span> Menu</a></span>
+				</div>
+			</div>
+			<div id="helpPane" style="display: none;">
+				<div id="helpPaneSidebar">
+					<div id="helpPaneTitle">API Reference</div>
+					<ul></ul>
+				</div>
+				<div id="helpPaneContent"></div>
+				<div id="helpPaneCloseButton">x</div>
+			</div>
+
+			<div id="menuPane" class='pop_up_box'>
+				<div id="leftMenuPane">
+					<ul>
+						<li id="rootDir">/</li>
+						<li id="levelsDir" class="nested selected">levels/</li>
+						<li id="scriptsDir" class="nested">scripts/</li>
+					</ul>
+				</div>
+				<div id="rightMenuPane">
+					<div class="pop_up_box_heading">Level Select</div>
+					<div id="root"></div>
+					<div id="levels"></div>
+					<div id="scripts"></div>
+				</div>
+			</div>
+
+            <div id="notepadPane" class='pop_up_box'>
+                <div id='notepadPaneContent'>
+                    <div class="pop_up_box_heading">$EDITOR</div>
+                    <textarea id=notepadTextarea></textarea>
+                    <button id='notepadSaveButton'>Save</button>
+                </div>
+                <div id='notepadPaneCloseButton'>x</div>
+            </div>
+		</div>
+
+	</div>
+
+	<div id="jquery_bgPlayer" class="jp-jplayer"></div>
+	<div id="jquery_soundPlayer" class="jp-jplayer"></div>
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-345959-12']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+	</script>
+</body>
+</html>
