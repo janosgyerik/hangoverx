@@ -57,6 +57,12 @@ function startLevel(map) {
         'color': 'red',
         'onCollision': function (player, me) {
             player.killedBy('deadly laser');
+        },
+        'passableFor': ['player', 'eye'],
+        'locked': true,
+        'unlockableBy': ['eye'],
+        'onUnlock': function (game) {
+            game.map.writeStatus('machine voice: "d-e-a-c-t-i-v-a-t-e"');
         }
     });
 
@@ -66,8 +72,7 @@ function startLevel(map) {
         'color': 'red',
         'behavior': function (me) {
             moveToward(me, 'player');
-        },
-        'hello': true
+        }
     });
 
     var exit_x = parseInt(map.getWidth() / 2);
