@@ -12,7 +12,7 @@ function Game(debugMode, startLevel) {
     };
 
     this._levelFileNames = [
-        '01_somewhereInTheDesert.jsx',
+        '01_inTheDesert.jsx',
         '99_credits.jsx'
     ];
 

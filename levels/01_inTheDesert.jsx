@@ -4,9 +4,9 @@
     "commandsIntroduced": []
 }
 #END_PROPERTIES#
-/***************************
- * somewhereInTheDesert.js *
- ***************************
+/******************
+ * inTheDesert.js *
+ ******************
  *
  * Good morning, Mr.... uhm, who are you again?
  *
