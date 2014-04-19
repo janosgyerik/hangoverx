@@ -193,6 +193,9 @@ Game.prototype.objects = {
         'behavior': function (me) {
             moveToward(me, 'player');
             killPlayerIfTooFar(me);
-        }
+        },
+        'onCollision': function (player) {
+            player.killedBy('"the eye"');
+        },
     }
 };
