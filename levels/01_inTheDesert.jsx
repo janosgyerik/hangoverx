@@ -94,10 +94,7 @@ function startLevel(map) {
         for (var i = 0; i < map.getWidth(); i++) {
             for (var j = 0; j < map.getHeight(); j++) {
                 if (map.getPlayer().atLocation(i,j)
-                    || map.getObjectTypeAt(i, j) === 'block'
-                    || map.getObjectTypeAt(i, j) === 'computer'
-                    || map.getObjectTypeAt(i, j) === 'eye'
-                    || map.getObjectTypeAt(i, j) === 'exit') {
+                    || map.getObjectTypeAt(i, j) !== 'empty') {
                     continue;
                 }
 
