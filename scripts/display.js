@@ -160,15 +160,18 @@ ROT.Display.prototype.playIntro = function (map, i) {
     } else {
         if (typeof i === 'undefined') { i = map.getHeight(); }
         this.clear();
-        this.drawText(0, i - 2, "%c{#0f0}> initialize")
-        this.drawText(15, i + 3, "H A N G O V E R X");
-        this.drawText(20, i + 5, "- or - ");
-        this.drawText(3, i + 7, "THE CONTINUING ADVENTURES OF MR. ?(CLULESS?)");
-        //this.drawText(3, i + 12, "a game by ...");
-        this.drawText(10, i + 22, "Press any key to begin ...")
-        setTimeout(function () {
-            display.playIntro(map, i - 1);
-        }, 100);
+        var width = map.getWidth();
+        function drawCenteredLine(y, line) {
+            var x = parseInt((width - line.length) / 2);
+            display.drawText(x, y, line);
+        }
+        var j = i - 2;
+        this.drawText(0, j, "%c{#0f0}> initialize");
+        drawCenteredLine(j += 9, "H A N G O V E R X");
+        drawCenteredLine(j += 2, "- or - ");
+        drawCenteredLine(j += 2, "THE CONTINUING ADVENTURES OF MR.???(CLULESS?)");
+        drawCenteredLine(i + 20, "Press any key to begin!");
+        setTimeout(function () { display.playIntro(map, i - 1); }, 100);
     }
 };
 
