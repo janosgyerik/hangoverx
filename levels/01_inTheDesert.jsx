@@ -28,16 +28,16 @@ function startLevel(map) {
     //map.displayChapter('Chapter 1\nUhm... Wha..?');
 
     map.defineObject('laser', {
+        'type': 'trap',
         'symbol': '-',
         'color': 'red',
         'onCollision': function (player) {
             player.killedBy('deadly laser');
         },
         'passableFor': ['player', 'eye'],
-        'locked': true,
-        'unlockableBy': ['eye'],
-        'onUnlock': function (game) {
-            game.map.writeStatus('machine voice: "d-e-a-c-t-i-v-a-t-e"');
+        'deactivatedBy': ['eye'],
+        'onDeactivate': function () {
+            map.writeStatus('machine voice: "d-e-a-c-t-i-v-a-t-e"');
         }
     });
 

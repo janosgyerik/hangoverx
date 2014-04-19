@@ -148,15 +148,6 @@ function Map(display, __game) {
         } else if (myType && object.impassableFor && object.impassableFor.indexOf(myType) > -1) {
             // this object is of a type that cannot pass the obstacle
             return false;
-        } else if (object.locked) {
-            if (myType && object.unlockableBy && object.unlockableBy.indexOf(myType) > -1) {
-                if (object.onUnlock) {
-                    object.onUnlock(__game);
-                }
-                __grid[x][y].type = 'empty';
-                return true;
-            }
-            return false;
         } else {
             // no obstacle
             return true;
