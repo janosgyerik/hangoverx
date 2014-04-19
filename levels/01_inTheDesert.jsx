@@ -41,20 +41,21 @@ function startLevel(map) {
         }
     });
 
-    var exit_x = parseInt(map.getWidth() / 2);
-    var exit_y = parseInt(map.getHeight() / 2) - 5;
-    map.placeObject(exit_x, exit_y, 'exit');
-    for (var i = 0; i < 4; ++i) {
-        map.placeObject(exit_x - 1, exit_y - 1 + i, 'block');
-        map.placeObject(exit_x + 1, exit_y - 1 + i, 'block');
-    }
-    map.placeObject(exit_x, exit_y - 1, 'block');
-    map.placeObject(exit_x, exit_y + 1, 'laser');
-    map.placeObject(exit_x, exit_y + 2, 'laser');
+    var building_x = parseInt(map.getWidth() / 2);
+    var building_y = parseInt(map.getHeight() / 2) - 5;
+    map.createFromGrid(
+        ['###',
+         '#E#',
+         '#-#'],
+        {
+          '#': 'block',
+          'E': 'exit',
+          '-': 'laser'
+        }, building_x, building_y);
 
-    map.placePlayer(map.getWidth()-17, map.getHeight()-7);
-    map.placeObject(map.getWidth()-17, map.getHeight()-5, 'eye');
-    map.placeObject(map.getWidth()-11, map.getHeight()-7, 'computer');
+    map.placePlayer(building_x + 1, building_y + 8);
+    map.placeObject(building_x + 6, building_y + 8, 'computer');
+    map.placeObject(building_x - 1, building_y + 5, 'eye');
 
     function generateDesert() {
         for (var i = 0; i < map.getWidth(); i++) {
