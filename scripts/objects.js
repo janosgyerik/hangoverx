@@ -8,6 +8,31 @@ Objects can have the following parameters:
     type: 'item' or null
 */
 
+function moveToward(obj, type) {
+    var target = obj.findNearest(type);
+    var leftDist = obj.getX() - target.x;
+    var upDist = obj.getY() - target.y;
+
+    if (Math.abs(upDist) < 2 && Math.abs(leftDist) < 4
+        || Math.abs(leftDist) < 2 && Math.abs(upDist) < 4) {
+        return;
+    }
+    var direction;
+    if (upDist > 0 && upDist >= leftDist) {
+        direction = 'up';
+    } else if (upDist < 0 && upDist < leftDist) {
+        direction = 'down';
+    } else if (leftDist > 0 && leftDist >= upDist) {
+        direction = 'left';
+    } else {
+        direction = 'right';
+    }
+
+    if (obj.canMove(direction)) {
+        obj.move(direction);
+    }
+}
+
 Game.prototype.objects = {
     // special
 
@@ -148,6 +173,15 @@ Game.prototype.objects = {
         },
         'onDrop': function (game) {
             game.map.writeStatus('You have lost the Algorithm!');
+        }
+    },
+
+    'eye': {
+        'type': 'dynamic',
+        'symbol': 'E',
+        'color': 'red',
+        'behavior': function (me) {
+            moveToward(me, 'player');
         }
     }
 };
