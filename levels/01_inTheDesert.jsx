@@ -1,6 +1,6 @@
 #BEGIN_PROPERTIES#
 {
-    "version": "0.2",
+    "version": "1.0",
     "commandsIntroduced": []
 }
 #END_PROPERTIES#
@@ -25,7 +25,7 @@
 
 function startLevel(map) {
 #START_OF_START_LEVEL#
-    //map.displayChapter('Chapter 1\nUhm... Wha..?');
+    map.displayChapter('Chapter 1\nUhm... Wha..?');
 
     map.defineObject('laser', {
         'type': 'trap',
