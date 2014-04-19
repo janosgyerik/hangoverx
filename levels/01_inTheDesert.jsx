@@ -57,24 +57,24 @@ function startLevel(map) {
     map.placeObject(building_x + 6, building_y + 8, 'computer');
     map.placeObject(building_x - 1, building_y + 5, 'eye');
 
-    function generateDesert() {
-        for (var i = 0; i < map.getWidth(); i++) {
-            for (var j = 0; j < map.getHeight(); j++) {
-                if (map.getPlayer().atLocation(i,j)
-                    || map.getObjectTypeAt(i, j) !== 'empty') {
-                    continue;
-                }
+    generateDesert(map, .01);
 
-                var rv = Math.random();
-                if (rv < 0.01) {
-                    map.placeObject(i, j, 'tree');
-                }
+#END_OF_START_LEVEL#
+}
+
+function generateDesert(map, density) {
+    for (var i = 0; i < map.getWidth(); i++) {
+        for (var j = 0; j < map.getHeight(); j++) {
+            if (map.getPlayer().atLocation(i,j)
+                || map.getObjectTypeAt(i, j) !== 'empty') {
+                continue;
+            }
+            var rv = Math.random();
+            if (rv < density) {
+                map.placeObject(i, j, 'tree');
             }
         }
     }
-    generateDesert();
-
-#END_OF_START_LEVEL#
 }
 
 function onExit(map) {
