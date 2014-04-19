@@ -33,6 +33,16 @@ function moveToward(obj, type) {
     }
 }
 
+function killPlayerIfTooFar(obj) {
+    var target = obj.findNearest('player');
+    var leftDist = obj.getX() - target.x;
+    var upDist = obj.getY() - target.y;
+
+    if (Math.abs(upDist) > 8 || Math.abs(leftDist) > 8) {
+        obj._map.getPlayer().killedBy('"suspicious circumstances"');
+    }
+}
+
 Game.prototype.objects = {
     // special
 
@@ -182,6 +192,7 @@ Game.prototype.objects = {
         'color': 'red',
         'behavior': function (me) {
             moveToward(me, 'player');
+            killPlayerIfTooFar(me);
         }
     }
 };

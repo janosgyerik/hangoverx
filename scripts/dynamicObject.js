@@ -99,6 +99,8 @@ function DynamicObject(map, type, x, y) {
         }
     };
 
+    this._map = map;
+
     this._destroy = function (onMapReset) {
         var me = this;
 
