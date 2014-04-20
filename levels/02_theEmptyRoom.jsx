@@ -32,6 +32,10 @@ function startLevel(map) {
                     throw 'Wrong answer! Expected ' + expected + ' for input ' + input;
                 }
             }
+            if (player.challengeResponse !== 'function') {
+                player.killedBy('system error');
+                return;
+            }
             try {
                 challenge(player.challengeResponse);
             } catch (err) {
