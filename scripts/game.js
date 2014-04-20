@@ -13,6 +13,7 @@ function Game(debugMode, startLevel) {
 
     this._levelFileNames = [
         '01_inTheDesert.jsx',
+        '02_theEmptyRoom.jsx',
         '98_toBeContinued.jsx',
         '99_credits.jsx'
     ];
