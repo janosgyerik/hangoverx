@@ -44,7 +44,7 @@ HangoverX is based on (or a total rip-off of) another game called Untrusted by [
 We'd like to thank:
 
 - Alex for brainstorming
-- Pierre-Jean for brainstorming
+- [Pierre-Jean](http://pierre-jean.baraud.fr/) for brainstorming
 - Gregory for not saying "you suck" (I know it wasn't easy but you did it!)
 
 ### License
