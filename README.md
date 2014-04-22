@@ -6,7 +6,7 @@ The game presents you with a roguelike-like playing environment and a console wi
 
 ### Development
 
-To merge the JavaScript files into `scripts/build/hangoverx.js` and enables debug features:
+To merge the JavaScript files into `scripts/build/hangoverx.js` and enable debug features:
 
     make
 
@@ -27,11 +27,15 @@ Then run:
 ### Editing levels
 
 While editing a level, you can leave the local server running,
-and rebuild `scripts/build/hangoverx.js` in debug mode with:
+and rebuild `scripts/build/hangoverx.js` in debug mode simply with `make`.
 
-    make clean debug
+To edit and test a specific level `n`, visit: http://localhost:9001/?lvl=n, for example [http://localhost:9001/?lvl=2](http://localhost:9001/?lvl=2)
 
-To edit and test a specific level `n=3`, visit: http://localhost:9001/?lvl=3
+### Adding a new level
+
+1. Create a new file in `levels/`, perhaps as a copy of another level.
+2. Edit the file `scripts/game.js` and add the level to the list.
+3. Run `make` and reload the page in your browser.
 
 ### Acknowledgements
 
