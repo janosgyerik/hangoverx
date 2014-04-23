@@ -167,7 +167,11 @@ function Game(debugMode, startLevel) {
     };
 
     this._levelFileNames = [
-        '01_somewhereInTheDesert.jsx'
+        '01_inTheDesert.jsx',
+        '02_theEmptyRoom.jsx',
+        '03_theCollapsingRoom.jsx',
+        '98_toBeContinued.jsx',
+        '99_credits.jsx'
     ];
 
     this._viewableScripts = [
@@ -1099,15 +1103,18 @@ ROT.Display.prototype.playIntro = function (map, i) {
     } else {
         if (typeof i === 'undefined') { i = map.getHeight(); }
         this.clear();
-        this.drawText(0, i - 2, "%c{#0f0}> initialize")
-        this.drawText(15, i + 3, "H A N G O V E R X");
-        this.drawText(20, i + 5, "- or - ");
-        this.drawText(3, i + 7, "THE CONTINUING ADVENTURES OF MR. ?(CLULESS?)");
-        //this.drawText(3, i + 12, "a game by ...");
-        this.drawText(10, i + 22, "Press any key to begin ...")
-        setTimeout(function () {
-            display.playIntro(map, i - 1);
-        }, 100);
+        var width = map.getWidth();
+        function drawCenteredLine(y, line) {
+            var x = parseInt((width - line.length) / 2);
+            display.drawText(x, y, line);
+        }
+        var j = i - 2;
+        this.drawText(0, j, "%c{#0f0}> initialize");
+        drawCenteredLine(j += 9, "H A N G O V E R X");
+        drawCenteredLine(j += 2, "- or - ");
+        drawCenteredLine(j += 2, "THE CONTINUING ADVENTURES OF MR.???(CLULESS?)");
+        drawCenteredLine(i + 20, "Press any key to begin!");
+        setTimeout(function () { display.playIntro(map, i - 1); }, 100);
     }
 };
 
@@ -1284,12 +1291,22 @@ function DynamicObject(map, type, x, y) {
     this._afterMove = function () {
         // try to pick up items
         var objectName = map._getGrid()[__x][__y].type;
-        if (map._getObjectDefinition(objectName).type === 'item' && !__definition.projectile) {
+        var object = map._getObjectDefinition(objectName);
+        if (object.type === 'item' && !__definition.projectile) {
             __inventory.push(objectName);
             map._removeItemFromMap(__x, __y, objectName);
             map._playSound('pickup');
+        } else if (object.type === 'trap') {
+            if (object.deactivatedBy && object.deactivatedBy.indexOf(__type) > -1) {
+                if (typeof(object.onDeactivate) === 'function') {
+                    object.onDeactivate();
+                }
+                map._removeItemFromMap(__x, __y, objectName);
+            }
         }
     };
+
+    this._map = map;
 
     this._destroy = function (onMapReset) {
         var me = this;
@@ -2068,6 +2085,41 @@ Objects can have the following parameters:
     type: 'item' or null
 */
 
+function moveToward(obj, type) {
+    var target = obj.findNearest(type);
+    var leftDist = obj.getX() - target.x;
+    var upDist = obj.getY() - target.y;
+
+    if (Math.abs(upDist) < 2 && Math.abs(leftDist) < 4
+        || Math.abs(leftDist) < 2 && Math.abs(upDist) < 4) {
+        return;
+    }
+    var direction;
+    if (upDist > 0 && upDist >= leftDist) {
+        direction = 'up';
+    } else if (upDist < 0 && upDist < leftDist) {
+        direction = 'down';
+    } else if (leftDist > 0 && leftDist >= upDist) {
+        direction = 'left';
+    } else {
+        direction = 'right';
+    }
+
+    if (obj.canMove(direction)) {
+        obj.move(direction);
+    }
+}
+
+function killPlayerIfTooFar(obj) {
+    var target = obj.findNearest('player');
+    var leftDist = obj.getX() - target.x;
+    var upDist = obj.getY() - target.y;
+
+    if (Math.abs(upDist) > 8 || Math.abs(leftDist) > 8) {
+        obj._map.getPlayer().killedBy('"suspicious circumstances"');
+    }
+}
+
 Game.prototype.objects = {
     // special
 
@@ -2209,6 +2261,19 @@ Game.prototype.objects = {
         'onDrop': function (game) {
             game.map.writeStatus('You have lost the Algorithm!');
         }
+    },
+
+    'eye': {
+        'type': 'dynamic',
+        'symbol': 'E',
+        'color': 'red',
+        'behavior': function (me) {
+            moveToward(me, 'player');
+            killPlayerIfTooFar(me);
+        },
+        'onCollision': function (player) {
+            player.killedBy('"the eye"');
+        },
     }
 };
 function Player(x, y, __map, __game) {
@@ -2860,144 +2925,6 @@ Game.prototype.reference = {
 };
 function Sound(source) {
     this.tracks = {
-        'Adversity': {
-            path: "music/Adversity.mp3",
-            artist: "Seropard",
-            title: "Adversity",
-            url: "https://soundcloud.com/seropard"
-        },
-        'Beach Wedding Dance': {
-            path: "music/Rolemusic_-_07_-_Beach_Wedding_Dance.mp3",
-            artist: "Rolemusic",
-            title: "Beach Wedding Dance",
-            url: "https://soundcloud.com/rolemusic"
-        },
-        'BossLoop': {
-            path: "music/Boss Loop 1.mp3",
-            artist: "Essa",
-            title: "Boss Loop 1",
-            url: "http://www.youtube.com/user/Essasmusic"
-        },
-        'Brazil': {
-            path: "music/Vernon_Lenoir_-_Brazilicon_alley.mp3",
-            artist: "Vernon Lenoir",
-            title: "Brazilicon Alley",
-            url: "http://vernonlenoir.wordpress.com/"
-        },
-        'Chip': {
-            path: "music/ThatAndyGuy-Chip-loop.mp3",
-            artist: "That Andy Guy",
-            title: "Da Funk Do You Know 'bout Chip?",
-            url: "https://soundcloud.com/that-andy-guy"
-        },
-        'cloudy_sin': {
-            path: "music/intricate_cloudy_sin.mp3",
-            artist: "iNTRICATE",
-            title: "cloudy sin",
-            url: "https://soundcloud.com/stk13"
-        },
-        'Come and Find Me': {
-            path: "music/Eric_Skiff_-_09_-_Come_and_Find_Me_-_B_mix.mp3",
-            artist: "Eric Skiff",
-            title: "Come and Find Me",
-            url: "http://ericskiff.com/"
-        },
-        'coming soon': {
-            path: "music/Fex_coming_soon.mp3",
-            artist: "Fex",
-            title: "coming soon",
-            url: "http://artistserver.com/Fex"
-        },
-        'Comme Des Orages': {
-            path: "music/Obsibilo_-_02_-_Comme_Des_Orages.mp3",
-            artist: "Obsibilo",
-            title: "Comme Des Orages",
-            url: "http://freemusicarchive.org/music/Obsibilo/"
-        },
-        'conspiracy': {
-            path: "music/conspiracy_bitcrusher_final.mp3",
-            artist: "Mike and Alan",
-            title: "Conspiracy",
-            url: "https://www.facebook.com/MicAndAlan"
-        },
-        'Death Destroyer': {
-            path: "music/BLEO_-_02_-_Death_Destroyer_Radio_Edit_feat_Rhinostrich.mp3",
-            artist: "BLEO feat Rhinostrich",
-            title: "Death Destroyer (Radio Edit)",
-            url: "http://bleo.dummydrome.com/"
-        },
-        'GameScratch': {
-            path: "music/DmitryMazin-GameScratch.mp3",
-            artist: "Dmitry Mazin",
-            title: "Dynamic Punctuality",
-            url: "https://soundcloud.com/dmitry-mazin"
-        },
-        'gurh': {
-            path: "music/gurh.mp3",
-            artist: "Dmitry Mazin",
-            title: "Dmitry's Thing #2",
-            url: "https://soundcloud.com/dmitry-mazin"
-        },
-        'Messeah': {
-            path: "music/RoccoW_-_Messeah.mp3",
-            artist: "RoccoW",
-            title: "Messeah",
-            url: "https://soundcloud.com/roccow"
-        },
-        'Night Owl': {
-            path: "music/Broke_For_Free_-_01_-_Night_Owl.mp3",
-            artist: "Broke for Free",
-            title: "Night Owl",
-            url: "http://brokeforfree.com/"
-        },
-        'Obscure Terrain': {
-            path: "music/Revolution_Void_-_08_-_Obscure_Terrain.mp3",
-            artist: "Revolution Void",
-            title: "Obscure Terrain",
-            url: "http://revolutionvoid.com/"
-        },
-        'Searching': {
-            path: "music/Eric_Skiff_-_06_-_Searching.mp3",
-            artist: "Eric Skiff",
-            title: "Searching",
-            url: "http://ericskiff.com/"
-        },
-        'Slimeball Vomit': {
-            path: "music/Various_Artists_-_15_-_Slimeball_vomit.mp3",
-            artist: "Radio Scotvoid",
-            title: "Slimeball Vomit",
-            url: "https://soundcloud.com/radio-scotvoid"
-        },
-        'Soixante-8': {
-            path: "music/Obsibilo_-_Soixante-8.mp3",
-            artist: "Obsibilo",
-            title: "Soixante-8",
-            url: "http://freemusicarchive.org/music/Obsibilo/"
-        },
-        'Tart': {
-            path: "music/BLEO_-_02_-_Tart_Pts_1__2_feat_KeFF.mp3",
-            artist: "BLEO feat KeFF",
-            title: "Tart (Pts 1-2)",
-            url: "http://bleo.dummydrome.com/"
-        },
-        'The Green': {
-            path: "music/Yonnie_The_Green.mp3",
-            artist: "Jonathan Holliday",
-            title: "The Green",
-            url: "http://www.soundclick.com/bands/default.cfm?bandID=836578"
-        },
-        'The_Waves_Call_Her_Name': {
-            path: "music/Sycamore_Drive_-_03_-_The_Waves_Call_Her_Name.mp3",
-            artist: "Sycamore Drive",
-            title: "The Waves Call Her Name",
-            url: "http://sycamoredrive.bandcamp.com/"
-        },
-        'Y': {
-            path: "music/Tortue_Super_Sonic_-_11_-_Y.mp3",
-            artist: "Tortue Super Sonic",
-            title: "Y",
-            url: "https://soundcloud.com/tss-tortue-super-sonic"
-        }
     };
 
     this.defaultTracks = [ // (not currently used, as all levels now have explicit tracks)
@@ -3047,6 +2974,7 @@ function Sound(source) {
         this.trackForLevel = name;
 
         var track = this.tracks[name];
+        if (!track) return;
         if (track.url) {
             var nowPlayingMsg = 'Now playing: "' + track.title + '" - <a target="_blank" href="' + track.url + '">' + track.artist + '</a>';
         } else {
@@ -3653,13 +3581,25 @@ Game.prototype.openHelp = function () {
     }
 };
 Game.prototype._levels = {
-    'levels/01_somewhereInTheDesert.jsx': '#BEGIN_PROPERTIES#\n{\n    "version": "0.2",\n    "commandsIntroduced": []\n}\n#END_PROPERTIES#\n/***************************\n * somewhereInTheDesert.js *\n ***************************\n *\n * Good morning, Mr.... uhm, who are you again?\n *\n * You are in the middle of the desert.\n * You don\'t remember who you are and what you\'re doing here.\n * And that headache...is...painful... Not your best Monday!\n *\n * What you see:\n *\n * - Desert. Everywhere. Some bushes.\n * - A floating red eye. Following your every move.\n *   Whatever it is, it\'s kind of unsettling...\n * - At least you have this computer. But what the heck for?\n * - And a small building with a gate. Watch that DEADLY laser!\n */\n\nfunction startLevel(map) {\n#START_OF_START_LEVEL#\n    //map.displayChapter(\'Chapter 1\\nUhm... Wha..?\');\n\n    function moveToward(obj, type) {\n        var target = obj.findNearest(type);\n        var leftDist = obj.getX() - target.x;\n        var upDist = obj.getY() - target.y;\n\n        if (Math.abs(upDist) < 2 && Math.abs(leftDist) < 4\n            || Math.abs(leftDist) < 2 && Math.abs(upDist) < 4) {\n            return;\n        }\n        var direction;\n        if (upDist > 0 && upDist >= leftDist) {\n            direction = \'up\';\n        } else if (upDist < 0 && upDist < leftDist) {\n            direction = \'down\';\n        } else if (leftDist > 0 && leftDist >= upDist) {\n            direction = \'left\';\n        } else {\n            direction = \'right\';\n        }\n\n        if (obj.canMove(direction)) {\n            obj.move(direction);\n        }\n    }\n\n    map.defineObject(\'laser\', {\n        \'symbol\': \'-\',\n        \'color\': \'#0ff\',\n        \'onCollision\': function (player, me) {\n            player.killedBy(\'deadly laser\');\n        }\n    });\n\n    map.defineObject(\'eye\', {\n        \'type\': \'dynamic\',\n        \'symbol\': \'E\',\n        \'color\': \'red\',\n        \'behavior\': function (me) {\n            moveToward(me, \'player\');\n        },\n        \'hello\': true\n    });\n\n    var exit_x = parseInt(map.getWidth() / 2);\n    var exit_y = parseInt(map.getHeight() / 2) - 5;\n    map.placeObject(exit_x, exit_y, \'exit\');\n    for (var i = 0; i < 4; ++i) {\n        map.placeObject(exit_x - 1, exit_y - 1 + i, \'block\');\n        map.placeObject(exit_x + 1, exit_y - 1 + i, \'block\');\n    }\n    map.placeObject(exit_x, exit_y - 1, \'block\');\n    map.placeObject(exit_x, exit_y + 1, \'laser\');\n    map.placeObject(exit_x, exit_y + 2, \'laser\');\n\n    map.placePlayer(map.getWidth()-17, map.getHeight()-7);\n    map.placeObject(map.getWidth()-17, map.getHeight()-5, \'eye\');\n    map.placeObject(map.getWidth()-11, map.getHeight()-7, \'computer\');\n\n    function generateDesert() {\n        for (var i = 0; i < map.getWidth(); i++) {\n            for (var j = 0; j < map.getHeight(); j++) {\n                if (map.getPlayer().atLocation(i,j)\n                    || map.getObjectTypeAt(i, j) === \'block\'\n                    || map.getObjectTypeAt(i, j) === \'computer\'\n                    || map.getObjectTypeAt(i, j) === \'exit\') {\n                    continue;\n                }\n\n                var rv = Math.random();\n                if (rv < 0.01) {\n                    map.placeObject(i, j, \'tree\');\n                }\n            }\n        }\n    }\n    generateDesert();\n\n#END_OF_START_LEVEL#\n}\n\nfunction onExit(map) {\n    if (!map.getPlayer().hasItem(\'computer\')) {\n        map.writeStatus("Don\'t forget to pick up the computer!");\n        return false;\n    }\n    return true;\n}\n ',
+    'levels/01_inTheDesert.jsx': '#BEGIN_PROPERTIES#\n{\n    "version": "1.0",\n    "commandsIntroduced": []\n}\n#END_PROPERTIES#\n/******************\n * inTheDesert.js *\n ******************\n *\n * Good morning, Mr.... uhm, who are you again?\n *\n * You are in the middle of the desert.\n * You don\'t remember who you are and what you\'re doing here.\n * And that headache...is...painful... Not your best Monday!\n *\n * What you see:\n *\n * - Desert. Everywhere. Some bushes.\n * - A floating red eye. Following your every move.\n *   Whatever it is, it\'s kind of unsettling...\n * - At least you have this computer. But what the heck for?\n * - And a small building with a gate. Watch that DEADLY laser!\n */\n\nfunction startLevel(map) {\n#START_OF_START_LEVEL#\n    map.displayChapter(\'Chapter 1\\nUhm... Wha..?\');\n\n    map.defineObject(\'laser\', {\n        \'type\': \'trap\',\n        \'symbol\': \'-\',\n        \'color\': \'red\',\n        \'onCollision\': function (player) {\n            player.killedBy(\'deadly laser\');\n        },\n        \'passableFor\': [\'player\', \'eye\'],\n        \'deactivatedBy\': [\'eye\'],\n        \'onDeactivate\': function () {\n            map.writeStatus(\'machine voice: "d-e-a-c-t-i-v-a-t-e"\');\n        }\n    });\n\n    var building_x = parseInt(map.getWidth() / 2);\n    var building_y = parseInt(map.getHeight() / 2) - 5;\n    map.createFromGrid(\n        [\'###\',\n         \'#E#\',\n         \'#-#\'],\n        {\n          \'#\': \'block\',\n          \'E\': \'exit\',\n          \'-\': \'laser\'\n        }, building_x, building_y);\n\n    map.placePlayer(building_x + 1, building_y + 8);\n    map.placeObject(building_x + 6, building_y + 8, \'computer\');\n    map.placeObject(building_x - 1, building_y + 5, \'eye\');\n\n    generateDesert(map, .01);\n\n#END_OF_START_LEVEL#\n}\n\nfunction generateDesert(map, density) {\n    for (var i = 0; i < map.getWidth(); i++) {\n        for (var j = 0; j < map.getHeight(); j++) {\n            if (map.getPlayer().atLocation(i,j)\n                || map.getObjectTypeAt(i, j) !== \'empty\') {\n                continue;\n            }\n            var rv = Math.random();\n            if (rv < density) {\n                map.placeObject(i, j, \'tree\');\n            }\n        }\n    }\n}\n\nfunction onExit(map) {\n    if (!map.getPlayer().hasItem(\'computer\')) {\n        map.writeStatus("Don\'t forget to pick up the computer!");\n        return false;\n    }\n    return true;\n}\n ',
+    'levels/02_theEmptyRoom.jsx': '#BEGIN_PROPERTIES#\n{\n    "version": "1.0",\n    "commandsIntroduced": []\n}\n#END_PROPERTIES#\n/*******************\n * theEmptyRoom.js *\n *******************\n *\n * Oh great, an empty room. That\'s so much better than a desert.\n * Shiny silvery walls and no exit.\n *\n * Oh look, a terminal. You seem to remember something about\n * a previous life, something about "programming", and "languages".\n * Maybe you can hookup your computer with the terminal and see\n * where your instincts take you...\n */\n\nfunction startLevel(map) {\n#START_OF_START_LEVEL#\n    map.displayChapter(\'Chapter 2\\nThe Empty Room\');\n\n    map.defineObject(\'terminal\', {\n        \'symbol\': \'T\',\n        \'color\': \'#88f\',\n        \'onCollision\': function (player) {\n            function challenge() {\n                var input = parseInt(Math.random() * 50) + 15;\n                var expected = {15:610,16:987,17:1597,18:2584,19:4181,20:6765,21:10946,22:17711,23:28657,24:46368,25:75025,26:121393,27:196418,28:317811,29:514229,30:832040,31:1346269,32:2178309,33:3524578,34:5702887,35:9227465,36:14930352,37:24157817,38:39088169,39:63245986,40:102334155,41:165580141,42:267914296,43:433494437,44:701408733,45:1134903170,46:1836311903,47:2971215073,48:4807526976,49:7778742049,50:12586269025,51:20365011074,52:32951280099,53:53316291173,54:86267571272,55:139583862445,56:225851433717,57:365435296162,58:591286729879,59:956722026041,60:1548008755920,61:2504730781961,62:4052739537881,63:6557470319842,64:0x9a661ca20bb,65:0xf9d297a859d,66:27777890035288,67:44945570212853,68:72723460248141,69:0x6b04f4c2fe42,70:0xad2934c6d08f,71:308061521170129,72:498454011879264,73:806515533049393,74:0x4a2dce62b0d91,75:0x780626e057bc2,76:0xc233f54308953,77:5527939700884757,78:8944394323791464,79:0x336a82d89c937c,80:0x533163ef0321e4,81:0x869be6c79fb560,82:0xd9cd4ab6a2d740,83:99194853094755490,84:0x23a367c34e563e0,85:0x39a9fadb327f080,86:0x5d4d629e80d5480,87:0x96f75d79b354500,88:0xf444c0183429980,89:0x18b3c1d91e77de00,90:0x27f80ddaa1ba7800,91:466004661037553e4,92:0x68a3dd8e61ecd000,93:0xa94fad42221f2800,94:0x111f38ad0840c0000,95:319404346349901e5,96:5168070885485833e4,97:8362114348984843e4,98:0x755b0bdd8fa998000,99:2189229958345552e5,100:3542248481792619e5}[input]; \n                return expected == getAnswer(input);\n            }\n            function getAnswer(input) {\n#BEGIN_EDITABLE#\n                // Hm, buggy software?\n                // Apparently I can inject my own code, right here...\n\n                return 42;\n#END_EDITABLE#\n            }\n            if (!challenge()) {\n                player.killedBy(\'wrong answer\');\n            }\n            if (!map.opened) {\n                map.writeStatus("*click*");\n                map.opened = true;\n            }\n        }\n    });\n\n    var grid = [\n      \'#####################\',\n      \'#        #x#        #\',\n      \'#        #T#        #\',\n      \'#                   #\',\n      \'#                   #\',\n      \'#                   #\',\n      \'#                   #\',\n      \'#                   #\',\n      \'#             @     #\',\n      \'#                   #\',\n      \'#              e    #\',\n      \'#                   #\',\n      \'#####################\'\n    ];\n    var width = map.getWidth();\n    var height = map.getHeight();\n    var grid_x = parseInt((width - grid[0].length) / 2);\n    var grid_y = parseInt((height - grid.length) / 2);\n    map.createFromGrid(grid, {\n      \'T\': \'terminal\',\n      \'x\': \'exit\',\n      \'#\': \'block\',\n      \'@\': \'player\',\n      \'e\': \'eye\'\n    }, grid_x, grid_y);\n#END_OF_START_LEVEL#\n}\n ',
+    'levels/03_theCollapsingRoom.jsx': '#BEGIN_PROPERTIES#\n{\n    "version": "0.1",\n    "commandsIntroduced": []\n}\n#END_PROPERTIES#\n/************************\n * theCollapsingRoom.js *\n ************************\n *\n * As you step through the portal, bright flash of white light.\n * You feel... different. But the worst news is, the room seems\n * to be collapsing on you. I mean, MASSIVE CEILING BLOCKS are\n * falling, man, do something!\n *\n * Good thing you found a place in the security system to inject\n * your custom code, maybe that can help!\n */\n\nfunction startLevel(map) {\n#START_OF_START_LEVEL#\n    map.displayChapter(\'Chapter 3\\nThe Collapsing Room\');\n\n    var width = map.getWidth();\n    var height = map.getHeight();\n    var half_width = Math.floor(width / 2);\n    var half_height = Math.floor(height / 2);\n    var grid_x = Math.floor(width / 4);\n    var grid_y = Math.floor(height / 4);\n\n    for (var i = 0; i < half_width; ++i) {\n        map.placeObject(grid_x + i, grid_y, \'block\');\n        map.placeObject(grid_x + i, grid_y + half_height - 1, \'block\');\n    }\n    for (var i = 1; i < half_height; ++i) {\n        map.placeObject(grid_x, grid_y + i, \'block\');\n        map.placeObject(grid_x + half_width - 1, grid_y + i, \'block\');\n    }\n\n    map.placePlayer(half_width, half_height);\n    map.placeObject(half_width + 2, half_height + 2, \'eye\');\n\n    var exit_x, exit_y;\n    switch (Math.floor(Math.random() * 4)) {\n        case 0:\n            exit_x = grid_x + 1;\n            exit_y = grid_y + 1;\n            break;\n        case 1:\n            exit_x = grid_x - 2 + half_width;\n            exit_y = grid_y + 1;\n            break;\n        case 2:\n            exit_x = grid_x - 2 + half_width;\n            exit_y = grid_y - 2 + half_height;\n            break;\n        case 3:\n            exit_x = grid_x + 1;\n            exit_y = grid_y - 2 + half_height;\n            break;\n    }\n    map.placeObject(exit_x, exit_y, \'exit\');\n\n#BEGIN_EDITABLE#\n\n#END_EDITABLE#\n\n    function bringItDown(map, blocks_per_round) {\n        for (var count = 0, z = 0; count < blocks_per_round && z < 100; ++z) {\n            var x = grid_x + 1 + Math.floor(Math.random() * (half_width - 2));\n            var y = grid_y + 1 + Math.floor(Math.random() * (half_height - 2));\n            if (map.getPlayer().atLocation(x, y)) {\n                map.getPlayer().killedBy(\'massive ceiling block\');\n            }\n            if (map.getObjectTypeAt(x, y) !== \'empty\') {\n                continue;\n            }\n            map.placeObject(x, y, \'block\');\n            ++count;\n        }\n    }\n\n    map.defineObject(\'rainmaker\', {\n        \'type\': \'dynamic\',\n        \'symbol\': \' \',\n        \'behavior\': function() {\n            bringItDown(map, 10);\n        }\n    });\n    map.placeObject(1, 1, \'rainmaker\');\n#END_OF_START_LEVEL#\n}\n\nfunction validateLevel(map) {\n    map.validateExactlyXManyObjects(1, \'exit\');\n}\n ',
+    'levels/98_toBeContinued.jsx': '#BEGIN_PROPERTIES#\n{\n    "version": "1.0"\n}\n#END_PROPERTIES#\n/********************\n * toBeContinued.js *\n ********************/\n\nfunction startLevel(map) {\n#START_OF_START_LEVEL#\n    var width = map.getWidth();\n    var start_y = parseInt(map.getHeight() / 2) - 5;\n    var lines = [\n        \'... TO BE CONTINUED ...\',\n        \'... or ...\',\n        \'... do it yourself, fork the story!\',\n        \'https://github.com/janosgyerik/hangoverx\',\n        \';-)\'\n    ];\n\n    function drawLine(i) {\n        var line = lines[i];\n        var x = parseInt((width - line.length) / 2);\n        var y = start_y + i * 2;\n        map._display.drawText(x, y, line);\n\n        if (++i < lines.length) {\n            setTimeout(function () {drawLine(i);}, 2000)\n        }\n    }\n\n    setTimeout(function () {drawLine(0);}, 4000);\n\n#END_OF_START_LEVEL#\n}\n ',
+    'levels/99_credits.jsx': '#BEGIN_PROPERTIES#\n{\n    "version": "0.1"\n}\n#END_PROPERTIES#\n/**************\n * credits.js *\n **************/\n\nfunction startLevel(map) {\n#START_OF_START_LEVEL#\n    var credits = [\n        [15, 1, "H A N G O V E R X"],\n        [20, 2, "- or - "],\n        [3, 3, "THE CONTINUING ADVENTURES OF MR. ?(CLULESS?)"],\n        [15, map.getHeight() - 2, "Thank_you: \'for playing!\'"],\n        [1, map.getHeight() - 1, "}"]\n    ];\n\n    function drawCredits(i) {\n        if (i >= credits.length) {\n            return;\n        }\n\n        // redraw lines bottom to top to avoid cutting off letters\n        for (var j = i; j >= 0; j--) {\n            var line = credits[j];\n            map._display.drawText(line[0], line[1], line[2]);\n        }\n\n        setTimeout(function () {drawCredits(i+1);}, 2000)\n    }\n\n    setTimeout(function () {drawCredits(0);}, 4000);\n\n#END_OF_START_LEVEL#\n}\n ',
 };
 $(document).ready(function() {
-    var startLevel = getParameterByName('lvl') ? parseInt(getParameterByName('lvl')) : null;
-    window.game = new Game(true, startLevel);
-    window.game._initialize();
+    new Game()._initialize();
     window.eval = {};
+});
+
+// prevent ctrl+R and F5
+$(document).bind('keydown keyup', function(e) {
+    if(e.which === 116) {
+       return false;
+    }
+    if(e.which === 82 && e.ctrlKey) {
+       return false;
+    }
 });
 
 })();
