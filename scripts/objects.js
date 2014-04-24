@@ -13,6 +13,30 @@ function moveToward(obj, type) {
     var leftDist = obj.getX() - target.x;
     var upDist = obj.getY() - target.y;
 
+    var direction;
+    if (upDist == 0 && leftDist == 0) {
+        return;
+    }
+    if (upDist > 0 && upDist >= leftDist) {
+        direction = 'up';
+    } else if (upDist < 0 && upDist < leftDist) {
+        direction = 'down';
+    } else if (leftDist > 0 && leftDist >= upDist) {
+        direction = 'left';
+    } else {
+        direction = 'right';
+    }
+
+    if (obj.canMove(direction)) {
+        obj.move(direction);
+    }
+}
+
+function followAndKeepDistance(obj, type) {
+    var target = obj.findNearest(type);
+    var leftDist = obj.getX() - target.x;
+    var upDist = obj.getY() - target.y;
+
     if (Math.abs(upDist) < 2 && Math.abs(leftDist) < 4
         || Math.abs(leftDist) < 2 && Math.abs(upDist) < 4) {
         return;
@@ -191,11 +215,23 @@ Game.prototype.objects = {
         'symbol': 'E',
         'color': 'red',
         'behavior': function (me) {
-            moveToward(me, 'player');
+            followAndKeepDistance(me, 'player');
             killPlayerIfTooFar(me);
         },
         'onCollision': function (player) {
             player.killedBy('"the eye"');
+        },
+    },
+
+    'guard': {
+        'type': 'dynamic',
+        'symbol': 'd',
+        'color': 'red',
+        'behavior': function (me) {
+            moveToward(me, 'player');
+        },
+        'onCollision': function (player) {
+            player.killedBy('a guard drone');
         },
     }
 };
