@@ -76,3 +76,7 @@ function startLevel(map) {
     }, grid_x, grid_y);
 #END_OF_START_LEVEL#
 }
+
+function validateLevel(map) {
+    map.validateExactlyXManyObjects(1, 'exit');
+}
