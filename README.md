@@ -4,6 +4,12 @@
 
 The game presents you with a roguelike-like playing environment and a console window  with the JavaScript code generating each level. As loaded, each level is unbeatable, and most of the JavaScript is blocked from editing. The challenge is to open a path to the next level using only the limited tools left open to you.
 
+### News
+
+This is a work in progress (very slowly).
+When a level is ready for testing (or, ahem, broken),
+I tweet it on [@hangoverjsnews](https://twitter.com/hangoverxnews).
+
 ### Development
 
 To merge the JavaScript files into `scripts/build/hangoverx.js` and enable debug features:
@@ -43,9 +49,8 @@ HangoverX is based on (or a total rip-off of) another game called Untrusted by [
 
 We'd like to thank:
 
-- Alex for brainstorming
-- [Pierre-Jean](http://pierre-jean.baraud.fr/) for brainstorming
-- Gregory for not saying "you suck" (I know it wasn't easy but you did it!)
+- Alexandre, [Pierre-Jean](http://pierre-jean.baraud.fr/), Camille, and the TIPsy team for brainstorming and testing
+- Alexandre for the idea of Level 3 (collapsing room)
 
 ### License
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.
