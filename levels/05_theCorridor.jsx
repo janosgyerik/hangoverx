@@ -37,12 +37,21 @@ function startLevel(map) {
         'type': 'dynamic',
         'symbol': '-',
         'color': '#f00',
-        'impassable': 'true',
-        'behavior': function (me) {
-            trap_behaviour(me, -3, 0);
+        'onCollision': function (player) {
+            player.killedBy('a laser');
         }
     }
     );
+    function trap_behaviour (me, left, right) {
+        var player_pos = me.findNearest('player');
+        if (player_pos.y - me.getY() <= 1 && !me.trapTriggered) {
+            me.trapTriggered = true;
+            for (var x = left; x < right; ++x) {
+                map.placeObject(x, me.getY(), 'laser')
+            }
+        }
+    }
+
     var level_map = [
         '#######'
         '#  x  #'
