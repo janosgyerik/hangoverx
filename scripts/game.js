@@ -16,6 +16,7 @@ function Game(debugMode, startLevel) {
         '02_theEmptyRoom.jsx',
         '03_theCollapsingRoom.jsx',
         '04_theGuard.jsx',
+        '05_theCorridor.jsx',
         '98_toBeContinued.jsx',
         '99_credits.jsx'
     ];
