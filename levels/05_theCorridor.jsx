@@ -11,7 +11,7 @@
 
 function startLevel(map) {
 #START_OF_START_LEVEL#
-    map.displayChapter('Chapter 5\nChapters are supposed to be more than one level long');
+    map.displayChapter('Chapter 4.1\nChapters are supposed to be more than one level long');
 
     map.defineObject('trap_left', {
         'type': 'dynamic',
